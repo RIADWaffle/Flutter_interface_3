@@ -1,6 +1,7 @@
 //DEPENDENCIES
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:interface_3/ui/profile_iu.dart';
 
 // UI
 import '/ui/button_ui.dart';
@@ -31,114 +32,96 @@ class _TabBarDemoState extends State<TabBarDemo> {
         length: 5,
         child: Scaffold(
           backgroundColor: const Color.fromARGB(255, 49, 50, 53),
-          body: TabBarView(
-            children: [
-              // Primer tab
-              Column(
-                children: [
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height *
-                        0.22, // 23% de la altura de la pantalla
-
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          body: FutureBuilder<List>(
+            future: getUsers(),
+            builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
+              if (snapshot.connectionState == ConnectionState.done &&
+                  snapshot.hasData) {
+                return TabBarView(
+                  children: [
+                    // Primer tab
+                    Column(
                       children: [
-                        CustomCircleAvatar(
-                          imageUrl:
-                              'https://i.pinimg.com/736x/33/b3/e9/33b3e9680e210b46805866d9b1ff7266.jpg',
-                          borderColor: const Color.fromARGB(255, 192, 192, 192),
-                          size: 96,
-                          name: "kukas",
-                          numbers: "123",
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height *
+                              0.22, // 23% de la altura de la pantalla
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              if (snapshot.data != null)
+                                for (var userData in snapshot.data!)
+                                  if (userData['num'] <= 3)
+                                    CustomCircleAvatar(
+                                      imageUrl: userData['img'],
+                                      borderColorChoice: userData['num'],
+                                      size: 100,
+                                      name: userData['name'],
+                                      calories: userData['calories'],
+                                    ),
+                            ],
+                          ),
                         ),
-                        CustomCircleAvatar(
-                          imageUrl:
-                              'https://i.pinimg.com/736x/33/b3/e9/33b3e9680e210b46805866d9b1ff7266.jpg',
-                          borderColor: const Color.fromARGB(255, 212, 175, 55),
-                          size: 125,
-                          name: "kukas",
-                          numbers: "123",
-                        ),
-                        CustomCircleAvatar(
-                          imageUrl:
-                              'https://i.pinimg.com/736x/33/b3/e9/33b3e9680e210b46805866d9b1ff7266.jpg',
-                          borderColor: const Color.fromARGB(255, 191, 137, 112),
-                          size: 88,
-                          name: "kukas",
-                          numbers: "123",
+                        if (snapshot.data != null)
+                          for (var userData in snapshot.data!)
+                            if (userData['num'] > 3)
+                              Padding(
+                                padding: const EdgeInsets.all(3.0),
+                                child: buildElevatedButton(
+                                  userData['num'],
+                                  userData['img'],
+                                  userData['name'],
+                                  userData['calories'],
+                                  () {
+                                    // Acción del botón
+                                  },
+                                ),
+                              ),
+                      ],
+                    ),
+
+                    // Otros tabs
+                    const Icon(Icons.cake),
+                    const Icon(Icons.timer),
+                    const Icon(Icons.chat),
+                    //LAST TAB
+                    Column(
+                      children: [
+                        if (snapshot.data != null)
+                          for (var userData in snapshot.data!)
+                            if (userData['num'] == 1)
+                              ProfileCircleAvatar(
+                                imageUrl: userData['img'],
+                                name: userData['name'],
+                                calories: userData['calories'],
+                                number: userData['num'],
+                                goal: userData['goalStrk'],
+                              ),
+                        Column(
+                          children: [
+                            Container(
+                              width: double.infinity, // Ocupa el 100% del ancho
+                              height: MediaQuery.of(context).size.height *
+                                  0.25, // Ocupa el 20% de la altura de la pantalla
+                              padding: const EdgeInsets.only(
+                                  top: 10.0), // Padding superior de 10
+                              child: Image.network(
+                                'https://i.pinimg.com/564x/0f/99/9d/0f999d0117b093ca74ca1da3346e83f2.jpg', // Reemplaza esto con tu enlace de imagen
+                                fit: BoxFit
+                                    .cover, // Ajusta la imagen al contenedor
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(3.0),
-                    child: buildElevatedButton(
-                        1,
-                        "https://i.pinimg.com/736x/33/b3/e9/33b3e9680e210b46805866d9b1ff7266.jpg",
-                        "kukas",
-                        "123", () {
-                      // Acción del segundo botón
-                    }),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(3.0),
-                    child: buildElevatedButton(
-                        1,
-                        "https://i.pinimg.com/736x/33/b3/e9/33b3e9680e210b46805866d9b1ff7266.jpg",
-                        "kukas",
-                        "123", () {
-                      // Acción del segundo botón
-                    }),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(3.0),
-                    child: buildElevatedButton(
-                        1,
-                        "https://i.pinimg.com/736x/33/b3/e9/33b3e9680e210b46805866d9b1ff7266.jpg",
-                        "kukas",
-                        "123", () {
-                      // Acción del tercer botón
-                    }),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(3.0),
-                    child: buildElevatedButton(
-                        1,
-                        "https://i.pinimg.com/736x/33/b3/e9/33b3e9680e210b46805866d9b1ff7266.jpg",
-                        "kukas",
-                        "123", () {
-                      // Acción del cuarto botón
-                    }),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(3.0),
-                    child: buildElevatedButton(
-                        1,
-                        "https://i.pinimg.com/736x/33/b3/e9/33b3e9680e210b46805866d9b1ff7266.jpg",
-                        "kukas",
-                        "123", () {
-                      // Acción del segundo botón
-                    }),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(3.0),
-                    child: buildElevatedButton(
-                        1,
-                        "https://i.pinimg.com/736x/33/b3/e9/33b3e9680e210b46805866d9b1ff7266.jpg",
-                        "kukas",
-                        "123", () {
-                      // Acción del segundo botón
-                    }),
-                  ),
-                ],
-              ),
-
-              // Otros tabs
-              const Icon(Icons.cake),
-              const Icon(Icons.timer),
-              const Icon(Icons.chat),
-              const Icon(Icons.account_box),
-            ],
+                  ],
+                );
+              } else if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              } else {
+                return const Text('Error al cargar datos');
+              }
+            },
           ),
           bottomNavigationBar: Container(
             color: const Color.fromARGB(255, 49, 50, 53),

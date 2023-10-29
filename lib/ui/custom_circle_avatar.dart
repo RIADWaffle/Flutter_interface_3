@@ -2,21 +2,35 @@ import 'package:flutter/material.dart';
 
 class CustomCircleAvatar extends StatelessWidget {
   final String imageUrl;
-  final Color borderColor;
   final double size;
   final String name;
-  final String numbers;
+  final String calories;
+  final int borderColorChoice;
 
   CustomCircleAvatar({
     required this.imageUrl,
-    required this.borderColor,
     this.size = 100.0,
     required this.name,
-    required this.numbers,
+    required this.calories,
+    this.borderColorChoice = 1, // Valor predeterminado dorado (1)
   });
+
+  Color getBorderColor() {
+    if (borderColorChoice == 1) {
+      return const Color.fromARGB(255, 255, 215, 0); // Dorado
+    } else if (borderColorChoice == 2) {
+      return const Color.fromARGB(255, 192, 192, 192); // Plateado
+    } else if (borderColorChoice == 3) {
+      return const Color.fromARGB(255, 191, 137, 112); // Bronce
+    } else {
+      return Colors.black; // Otra opción (puedes cambiar esto)
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final borderColor = getBorderColor();
+
     return Column(
       children: [
         Container(
@@ -43,7 +57,7 @@ class CustomCircleAvatar extends StatelessWidget {
               color: Color.fromARGB(255, 255, 255, 255)),
         ),
         Text(
-          numbers,
+          calories,
           style: const TextStyle(
               fontSize: 14.0, color: Color.fromARGB(255, 171, 171, 197)),
         ),
