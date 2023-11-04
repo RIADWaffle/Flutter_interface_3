@@ -1,14 +1,17 @@
 //DEPENDENCIES
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:interface_3/ui/profile_iu.dart';
+import 'package:interface_3/ui/shopCard_ui.dart';
 
 // UI
 import '/ui/button_ui.dart';
 import '/ui/custom_circle_avatar.dart';
+import 'package:interface_3/ui/foodCard_ui.dart';
+import 'package:interface_3/ui/profile_iu.dart';
 
 //SERVICES
 import 'services/firebase_service.dart';
+import 'ui/chat_ui.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,11 +35,16 @@ class _TabBarDemoState extends State<TabBarDemo> {
         length: 5,
         child: Scaffold(
           backgroundColor: const Color.fromARGB(255, 49, 50, 53),
-          body: FutureBuilder<List>(
-            future: getUsers(),
-            builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
+          body: FutureBuilder<Map<String, List>>(
+            future: fetchData(),
+            builder: (BuildContext context,
+                AsyncSnapshot<Map<String, List>> snapshot) {
               if (snapshot.connectionState == ConnectionState.done &&
                   snapshot.hasData) {
+                final Map<String, List> data = snapshot.data!;
+                final List userDBData = data['users'] ?? [];
+                final List storeDBData = data['store'] ?? [];
+                final List foodDBData = data['foods'] ?? [];
                 return TabBarView(
                   children: [
                     // Primer tab
@@ -49,7 +57,7 @@ class _TabBarDemoState extends State<TabBarDemo> {
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
                               if (snapshot.data != null)
-                                for (var userData in snapshot.data!)
+                                for (var userData in userDBData)
                                   if (userData['num'] <= 3)
                                     CustomCircleAvatar(
                                       imageUrl: userData['img'],
@@ -62,7 +70,7 @@ class _TabBarDemoState extends State<TabBarDemo> {
                           ),
                         ),
                         if (snapshot.data != null)
-                          for (var userData in snapshot.data!)
+                          for (var userData in userDBData)
                             if (userData['num'] > 3)
                               Padding(
                                 padding: const EdgeInsets.all(3.0),
@@ -79,15 +87,50 @@ class _TabBarDemoState extends State<TabBarDemo> {
                       ],
                     ),
 
-                    // Otros tabs
-                    const Icon(Icons.cake),
-                    const Icon(Icons.timer),
-                    const Icon(Icons.chat),
+                    //FOOD TAB
+                    Wrap(
+                      children: [
+                        if (snapshot.data != null)
+                          for (var foodData in foodDBData)
+                            CustomCard(
+                              imageUrl: foodData['img'],
+                              name: foodData['name'],
+                              calories: foodData['calories'],
+                            ),
+                      ],
+                    ),
+
+                    //SHOP TAB
+                    Wrap(
+                      children: [
+                        if (snapshot.data != null)
+                          for (var storeData in storeDBData)
+                            CustomShopCard(
+                              imageUrl: storeData['img'],
+                              name: storeData['name'],
+                              price: storeData['price'],
+                            ),
+                      ],
+                    ),
+
+                    //MESAGES TAB
+                    Wrap(
+                      children: [
+                        if (snapshot.data != null)
+                          for (var userData in userDBData)
+                            ChatMessage(
+                              name: userData['name'],
+                              message:
+                                  'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
+                              img: userData['img'],
+                            ),
+                      ],
+                    ),
                     //LAST TAB
                     Column(
                       children: [
                         if (snapshot.data != null)
-                          for (var userData in snapshot.data!)
+                          for (var userData in userDBData)
                             if (userData['num'] == 1)
                               ProfileCircleAvatar(
                                 imageUrl: userData['img'],
@@ -129,7 +172,7 @@ class _TabBarDemoState extends State<TabBarDemo> {
               tabs: [
                 Tab(icon: Icon(Icons.leaderboard)),
                 Tab(icon: Icon(Icons.cake)),
-                Tab(icon: Icon(Icons.timer)),
+                Tab(icon: Icon(Icons.store)),
                 Tab(icon: Icon(Icons.chat)),
                 Tab(icon: Icon(Icons.account_box)),
               ],
